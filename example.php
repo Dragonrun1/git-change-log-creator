@@ -35,7 +35,7 @@ try {
     $git = new GitChangeLogCreator;
     $git->getTags()
         ->getLogs()
-        ->fileContentGenerator()
+        ->contentGenerator()
         ->fileGenerate();
 } catch (Exception $e) {
     echo $e->getMessage();

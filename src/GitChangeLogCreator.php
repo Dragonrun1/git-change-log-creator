@@ -59,15 +59,16 @@ class GitChangeLogCreator
     /**
      * @return self
      */
-    public function fileContentGenerator()
+    public function contentGenerator()
     {
         $this->logs = array_reverse($this->logs);
         reset($this->logs);
-        $this->contents = '';
+        $this->contents = $this->getFileHeader();
         foreach ($this->logs as $tag => $commits) {
-            $this->contents .= '#### [' . $tag . ']' . PHP_EOL . $commits
+            $this->contents .= '## [' . $tag . ']' . PHP_EOL . $commits
                 . PHP_EOL;
         }
+        $this->contents .= $this->getFileFooter();
         return $this;
     }
     /**
@@ -95,6 +96,13 @@ class GitChangeLogCreator
         }
         $this->__destruct();
         return $this;
+    }
+    /**
+     * @return string
+     */
+    public function getContents()
+    {
+        return $this->contents;
     }
     /**
      * @return self
@@ -142,6 +150,26 @@ class GitChangeLogCreator
      *
      * @return self
      */
+    public function setFileFooter($value)
+    {
+        $this->fileFooter = $value;
+        return $this;
+    }
+    /**
+     * @param string $value
+     *
+     * @return self
+     */
+    public function setFileHeader($value)
+    {
+        $this->fileHeader = $value;
+        return $this;
+    }
+    /**
+     * @param string $value
+     *
+     * @return self
+     */
     public function setFileName($value = 'CHANGELOG.md')
     {
         $this->fileName = $value;
@@ -155,15 +183,22 @@ class GitChangeLogCreator
     protected function convertLogLine($log)
     {
         list($hash, $dateTime, $committer, $message) = explode("\t", $log);
-        $hash = substr($hash, 0, $this->hashLength);
+        $hashName = substr($hash, 0, $this->hashLength);
         $dateTime = gmdate('c', strtotime($dateTime));
         $message = preg_replace(
             '/#([0-9]+)/m',
             '[#$1](../../issues/$1)',
             $message
         );
-        $format = ' * [%1$s](../../commit/%1$s) %2$s (%3$s) - %4$s';
-        return sprintf($format, $hash, $dateTime, $committer, $message);
+        $format = ' * [%1$s](../../commit/%2$s) %3$s (%4$s) - %5$s';
+        return sprintf($format, $hashName, $hash, $dateTime, $committer, $message);
+    }
+    /**
+     * @return string
+     */
+    protected function getFileFooter()
+    {
+        return $this->fileFooter;
     }
     /**
      * @return resource
@@ -197,6 +232,19 @@ class GitChangeLogCreator
     /**
      * @return string
      */
+    protected function getFileHeader()
+    {
+        $fileName = $this->getFileName();
+        $replace = [$fileName . PHP_EOL .
+            str_repeat('=', strlen($fileName))];
+        return str_replace(
+            ['{fileName}'],
+            $replace,
+            $this->fileHeader);
+    }
+    /**
+     * @return string
+     */
     protected function getFileName()
     {
         if (empty($this->fileName)) {
@@ -204,13 +252,57 @@ class GitChangeLogCreator
         }
         return $this->fileName;
     }
+    /**
+     * @type string $contents
+     */
     protected $contents;
+    /**
+     * @type string $fileFooter
+     */
+    protected $fileFooter = <<<'FOOT'
+
+Create with [Git Change Log Creator](https://github.com/Dragonrun1/git-change-log-creator)
+FOOT;
+    /**
+     * @type resource $fileHandle
+     */
     protected $fileHandle;
+    /**
+     * @type string $fileHeader
+     */
+    protected $fileHeader = <<<'HEAD'
+{fileName}
+
+Auto-generated from Git log.
+
+HEAD;
+    /**
+     * @type string $fileName
+     */
     protected $fileName;
+    /**
+     * @type string $gitLog
+     */
     protected $gitLog = 'git log';
+    /**
+     * @type string $gitLogOptions
+     */
     protected $gitLogOptions = ' --pretty="%H%x09%ai%x09%aN%x09%s" ';
+    /**
+     * @type string $gitTag
+     */
     protected $gitTag = 'git tag';
+    /**
+     * @type int $hashLength Sets number of characters to use from Git hash
+     *       link text.
+     */
     protected $hashLength = 10;
+    /**
+     * @type string[] $logs
+     */
     protected $logs;
+    /**
+     * @type string[] $tags
+     */
     protected $tags;
 }
