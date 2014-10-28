@@ -2,7 +2,8 @@ CHANGELOG.md
 ============
 
 Auto-generated from Git log.
-## [master]
+## [master](../../tree/master)
+ * [4a80ca77b9](../../commit/4a80ca77b93c03e596a3cc399f1e413de88e418d) 2014-10-28T06:22:31+00:00 (Michael Cummings) - Added Current CHANGELOG.md as example.
  * [66b4385145](../../commit/66b43851454f7db3c70878e3fceb666a51ebb1bb) 2014-10-28T06:21:47+00:00 (Michael Cummings) - Added Header and footer stuff.
  * [cbb61b349a](../../commit/cbb61b349a3fc51946c2981c9ed1d8a11da4587e) 2014-10-28T04:54:54+00:00 (Michael Cummings) - Updated license text. Remove testing print_r(). Added bootstrap to example. Rearranged code.
  * [8046f30204](../../commit/8046f30204b4c971c86ee6f3e7d51a3211e9fb3c) 2014-10-28T04:51:40+00:00 (Michael Cummings) - Added bootstrap.php

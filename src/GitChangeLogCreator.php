@@ -65,8 +65,8 @@ class GitChangeLogCreator
         reset($this->logs);
         $this->contents = $this->getFileHeader();
         foreach ($this->logs as $tag => $commits) {
-            $this->contents .= '## [' . $tag . ']' . PHP_EOL . $commits
-                . PHP_EOL;
+            $this->contents .= '## [' . $tag . '](../../tree/' . $tag . ')'
+                . PHP_EOL . $commits . PHP_EOL;
         }
         $this->contents .= $this->getFileFooter();
         return $this;
