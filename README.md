@@ -1,5 +1,5 @@
-git-change-log-creator
-======================
+README.md
+=========
 
 Used to create an updated change log file from Git log.
 

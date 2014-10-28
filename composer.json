@@ -1,5 +1,5 @@
 {
-    "name": "Dragonrun1/git-change-log-creator",
+    "name": "dragonrun1/git-change-log-creator",
     "description": "Used to create an updated change log file from Git log",
     "minimum-stability": "stable",
     "license": "GPL-2.0",
