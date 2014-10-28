@@ -11,8 +11,7 @@
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your
- * option) any later version.
+ * Free Software Foundation, either version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -23,15 +22,15 @@
  * along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * You should be able to find a copy of this license in the LICENSE.md file. A
- * copy of the GNU GPL should also be available in the GNU-GPL.md file.
+ * You should be able to find a copy of this license in the LICENSE file.
  *
  * @copyright 2014 Michael Cummings
- * @license   http://www.gnu.org/copyleft/lesser.html GNU LGPL
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU GPL
  * @author    Michael Cummings <mgcummings@yahoo.com>
  */
 use GitChangeLogCreator\GitChangeLogCreator;
 
+include_once __DIR__ . '/bootstrap.php';
 try {
     $git = new GitChangeLogCreator;
     $git->getTags()

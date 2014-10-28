@@ -11,8 +11,7 @@
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your
- * option) any later version.
+ * Free Software Foundation, either version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -23,11 +22,10 @@
  * along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * You should be able to find a copy of this license in the LICENSE.md file. A
- * copy of the GNU GPL should also be available in the GNU-GPL.md file.
+ * You should be able to find a copy of this license in the LICENSE file.
  *
  * @copyright 2014 Michael Cummings
- * @license   http://www.gnu.org/copyleft/lesser.html GNU LGPL
+ * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU GPL
  * @author    Michael Cummings <mgcummings@yahoo.com>
  */
 namespace GitChangeLogCreator;
@@ -39,15 +37,6 @@ use Exception;
  */
 class GitChangeLogCreator
 {
-    protected $fileName = 'CHANGELOG.md';
-    protected $gitLog = 'git log';
-    protected $gitLogOptions = ' --pretty="%H%x09%ai%x09%aN%x09%s" ';
-    protected $gitTag = 'git tag';
-    protected $hashLength = 10;
-    protected $logs;
-    protected $contents;
-    protected $tags;
-
     /**
      * @throws Exception
      */
@@ -57,7 +46,16 @@ class GitChangeLogCreator
             throw new Exception('The shell_exec function has been disabled.');
         }
     }
-
+    /**
+     *
+     */
+    public function __destruct()
+    {
+        if ($this->fileHandle) {
+            @flock($this->fileHandle, LOCK_UN);
+            @fclose($this->fileHandle);
+        }
+    }
     /**
      * @return self
      */
@@ -72,37 +70,32 @@ class GitChangeLogCreator
         }
         return $this;
     }
-
     /**
+     * @return self
      * @throws Exception
      */
     public function fileGenerate()
     {
-        $handle = fopen($this->fileName, 'cb');
-        if (false === $handle) {
-            $mess = sprintf('Unable to open %1$s file', $this->fileName);
-            throw new Exception($mess);
-        }
+        $handle = $this->getFileHandle();
         $tries = 0;
-        // Give a little time to try getting lock.
-        $timeout = time() + 10;
-        while (!flock($handle, LOCK_EX | LOCK_NB)) {
+        //Give a minute to try writing file.
+        $timeout = time() + 60;
+        while (strlen($this->contents)) {
             if (++$tries > 10 || time() > $timeout) {
-                if ($handle) {
-                    @fclose($handle);
-                }
-                $mess = 'Giving up could NOT get flock on ' . $this->fileName;
+                $this->__destruct();
+                $mess = 'Giving up could NOT finish writing  ' . $this->getFileName();
                 throw new Exception($mess);
             }
-            // Wait 0.1 to 0.5 seconds before trying again.
-            usleep(rand(100000, 500000));
+            $written = fwrite($handle, $this->contents);
+            // Decrease $tries while making progress but NEVER $tries < 1.
+            if ($written > 0 && $tries > 0) {
+                --$tries;
+            }
+            $this->contents = substr($this->contents, $written);
         }
-        @ftruncate($handle, 0);
-        fwrite($handle, $this->contents);
-        @flock($handle, LOCK_UN);
-        @fclose($handle);
+        $this->__destruct();
+        return $this;
     }
-
     /**
      * @return self
      * @throws Exception
@@ -129,11 +122,31 @@ class GitChangeLogCreator
             $this->logs[$v] = implode(PHP_EOL, $commits);
             $nextTag = $v . '..';
         }
-        print_r($this->logs);
-        print PHP_EOL;
         return $this;
     }
-
+    /**
+     * @return $this
+     */
+    public function getTags()
+    {
+        $this->tags = array_unique(explode("\n", shell_exec($this->gitTag)));
+        sort($this->tags);
+        if ($this->tags[0] == '') {
+            $this->tags[0] = 'master';
+        }
+        sort($this->tags);
+        return $this;
+    }
+    /**
+     * @param string $value
+     *
+     * @return self
+     */
+    public function setFileName($value = 'CHANGELOG.md')
+    {
+        $this->fileName = $value;
+        return $this;
+    }
     /**
      * @param string $log
      *
@@ -152,29 +165,52 @@ class GitChangeLogCreator
         $format = ' * [%1$s](../../commit/%1$s) %2$s (%3$s) - %4$s';
         return sprintf($format, $hash, $dateTime, $committer, $message);
     }
-
     /**
-     * @return $this
+     * @return resource
+     * @throws Exception
      */
-    public function getTags()
+    protected function getFileHandle()
     {
-        $this->tags = array_unique(explode("\n", shell_exec($this->gitTag)));
-        sort($this->tags);
-        if ($this->tags[0] == '') {
-            $this->tags[0] = 'master';
+        if (empty($this->fileHandle)) {
+            $fileName = $this->getFileName();
+            $this->fileHandle = fopen($fileName, 'cb');
+            if (false === $this->fileHandle) {
+                $mess = sprintf('Unable to open %1$s file', $fileName);
+                throw new Exception($mess);
+            }
+            $tries = 0;
+            // Give a little time to try getting lock.
+            $timeout = time() + 10;
+            while (!flock($this->fileHandle, LOCK_EX | LOCK_NB)) {
+                if (++$tries > 10 || time() > $timeout) {
+                    $this->__destruct();
+                    $mess = 'Giving up could NOT get flock on ' . $fileName;
+                    throw new Exception($mess);
+                }
+                // Wait 0.1 to 0.5 seconds before trying again.
+                usleep(rand(100000, 500000));
+            }
+            @ftruncate($this->fileHandle, 0);
         }
-        sort($this->tags);
-        return $this;
+        return $this->fileHandle;
     }
-
     /**
-     * @param string $value
-     *
-     * @return self
+     * @return string
      */
-    public function setFileName($value = 'CHANGELOG.md')
+    protected function getFileName()
     {
-        $this->fileName = $value;
-        return $this;
+        if (empty($this->fileName)) {
+            $this->fileName = 'CHANGELOG.md';
+        }
+        return $this->fileName;
     }
+    protected $contents;
+    protected $fileHandle;
+    protected $fileName;
+    protected $gitLog = 'git log';
+    protected $gitLogOptions = ' --pretty="%H%x09%ai%x09%aN%x09%s" ';
+    protected $gitTag = 'git tag';
+    protected $hashLength = 10;
+    protected $logs;
+    protected $tags;
 }
