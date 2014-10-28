@@ -1,0 +1,36 @@
+{
+    "name": "Dragonrun1/git-change-log-creator",
+    "description": "Used to create an updated change log file from Git log",
+    "minimum-stability": "stable",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Michael Cummings",
+            "email": "mgcummings@yahoo.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "GitChangeLogCreator\\": [
+                "src/"
+            ]
+        }
+    },
+    "homepage": "https://github.com/Dragonrun1/git-change-log-creator",
+    "support": {
+        "issues": "https://github.com/Dragonrun1/git-change-log-creator/issues?state=open",
+        "source": "https://github.com/Dragonrun1/git-change-log-creator",
+        "wiki": "https://github.com/Dragonrun1/git-change-log-creator/wiki"
+    },
+    "require": {
+        "ext-date": "*",
+        "ext-SPL": "*",
+        "php": ">=5.4"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "dev-master",
+        "phploc/phploc": "*",
+        "phpmd/phpmd": "~2.1"
+    }
+}
