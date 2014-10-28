@@ -1,4 +1,10 @@
 git-change-log-creator
 ======================
 
-Used to create an updated changelog file from Git log
+Used to create an updated change log file from Git log.
+
+For an example of the generated output see [CHANGELOG.md](CHANGELOG.md).
+
+You can find a copy of the license in [LICENSE](LICENSE).
+
+For a simple example on how to use the class look at [example.php](example.php)
