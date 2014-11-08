@@ -30,7 +30,9 @@
  */
 namespace GitChangeLogCreator;
 
+use DomainException;
 use Exception;
+use RuntimeException;
 
 /**
  * Class GitChangeLogCreator
@@ -38,13 +40,15 @@ use Exception;
 class GitChangeLogCreator
 {
     /**
-     * @throws Exception
+     * @throws RunTimeException
      */
     public function __construct()
     {
         if (!function_exists('shell_exec')) {
-            throw new Exception('The shell_exec function has been disabled.');
+            $mess = 'The shell_exec function has been disabled.';
+            throw new RunTimeException($mess);
         }
+        $this->setHashLength();
     }
     /**
      *
@@ -63,8 +67,9 @@ class GitChangeLogCreator
     {
         $this->logs = array_reverse($this->logs);
         reset($this->logs);
-        $this->contents = $this->getFileHeader();
+        $this->contents = $this->getFileHeader(array_keys($this->logs));
         foreach ($this->logs as $tag => $commits) {
+            $tag = htmlentities($tag, ENT_QUOTES | ENT_DISALLOWED | ENT_HTML5, 'UTF-8');
             $this->contents .= '## [' . $tag . '](../../tree/' . $tag . ')'
                 . PHP_EOL . $commits . PHP_EOL;
         }
@@ -152,7 +157,7 @@ class GitChangeLogCreator
      */
     public function setFileFooter($value)
     {
-        $this->fileFooter = $value;
+        $this->fileFooter = (string)$value;
         return $this;
     }
     /**
@@ -162,7 +167,7 @@ class GitChangeLogCreator
      */
     public function setFileHeader($value)
     {
-        $this->fileHeader = $value;
+        $this->fileHeader = (string)$value;
         return $this;
     }
     /**
@@ -172,7 +177,23 @@ class GitChangeLogCreator
      */
     public function setFileName($value = 'CHANGELOG.md')
     {
-        $this->fileName = $value;
+        $this->fileName = (string)$value;
+        return $this;
+    }
+    /**
+     * @param int $value
+     *
+     * @throws DomainException
+     * @return self
+     */
+    public function setHashLength($value = 10)
+    {
+        $value = (int)$value;
+        if ($value < 1) {
+            throw new DomainException('Hash length must be > 0 was given ' .
+                $value);
+        }
+        $this->hashLength = $value;
         return $this;
     }
     /**
@@ -183,7 +204,7 @@ class GitChangeLogCreator
     protected function convertLogLine($log)
     {
         list($hash, $dateTime, $committer, $message) = explode("\t", $log);
-        $hashName = substr($hash, 0, $this->hashLength);
+        $hashName = substr($hash, 0, $this->getHashLength());
         $dateTime = gmdate('c', strtotime($dateTime));
         $message = preg_replace(
             '/#([0-9]+)/m',
@@ -230,15 +251,18 @@ class GitChangeLogCreator
         return $this->fileHandle;
     }
     /**
+     * @param string[] $tags
+     *
      * @return string
      */
-    protected function getFileHeader()
+    protected function getFileHeader(array $tags)
     {
-        $fileName = $this->getFileName();
-        $replace = [$fileName . PHP_EOL .
-            str_repeat('=', strlen($fileName))];
+        $fileName = $this->getFileName() . PHP_EOL
+            . str_repeat('=', strlen($this->getFileName()));
+        $toc = $this->getTableOfContents($tags);
+        $replace = [$fileName, $toc];
         return str_replace(
-            ['{fileName}'],
+            ['{fileName}', '{toc}'],
             $replace,
             $this->fileHeader);
     }
@@ -248,9 +272,34 @@ class GitChangeLogCreator
     protected function getFileName()
     {
         if (empty($this->fileName)) {
-            $this->fileName = 'CHANGELOG.md';
+            $this->setFileName();
         }
         return $this->fileName;
+    }
+    /**
+     * @return int
+     */
+    protected function getHashLength()
+    {
+        if (empty($this->hashLength)) {
+            $this->setHashLength();
+        }
+        return $this->hashLength;
+    }
+    /**
+     * @param array $tags
+     *
+     * @return string
+     */
+    protected function getTableOfContents(array $tags)
+    {
+        $toc = '';
+        foreach ($tags as $tag) {
+            $$tag = htmlentities($tag, ENT_QUOTES | ENT_DISALLOWED | ENT_HTML5,
+                'UTF-8');
+            $toc .= ' * [' . $tag . '](#' . $tag . ')' . PHP_EOL;
+        }
+        return $toc;
     }
     /**
      * @type string $contents
@@ -275,6 +324,10 @@ FOOT;
 
 Auto-generated from Git log.
 
+## Table of Contents
+
+{toc}
+
 HEAD;
     /**
      * @type string $fileName
@@ -296,7 +349,7 @@ HEAD;
      * @type int $hashLength Sets number of characters to use from Git hash
      *       link text.
      */
-    protected $hashLength = 10;
+    protected $hashLength;
     /**
      * @type string[] $logs
      */

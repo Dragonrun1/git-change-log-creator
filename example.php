@@ -32,7 +32,7 @@ use GitChangeLogCreator\GitChangeLogCreator;
 
 include_once __DIR__ . '/bootstrap.php';
 try {
-    $git = new GitChangeLogCreator;
+    $git = new GitChangeLogCreator();
     $git->getTags()
         ->getLogs()
         ->contentGenerator()
