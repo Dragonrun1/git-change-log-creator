@@ -211,6 +211,8 @@ class GitChangeLogCreator
             '[#$1](../../issues/$1)',
             $message
         );
+        $message = htmlentities($message,
+            ENT_QUOTES | ENT_DISALLOWED | ENT_HTML5, 'UTF-8');
         $format = ' * [%1$s](../../commit/%2$s) %3$s (%4$s) - %5$s';
         return sprintf($format, $hashName, $hash, $dateTime, $committer, $message);
     }
