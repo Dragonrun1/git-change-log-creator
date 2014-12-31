@@ -74,6 +74,8 @@ class GitChangeLogCreator
                 . PHP_EOL . $commits . PHP_EOL;
         }
         $this->contents .= $this->getFileFooter();
+        $this->contents = str_replace(["\r\n", "\r", "\n"], $this->getEol(),
+            $this->contents);
         return $this;
     }
     /**
@@ -151,6 +153,18 @@ class GitChangeLogCreator
         return $this;
     }
     /**
+     * Sets which end of line to use for output.
+     *
+     * @param string $value
+     *
+     * @return self
+     */
+    public function setEol($value = "\n")
+    {
+        $this->eol = $value;
+        return $this;
+    }
+    /**
      * @param string $value
      *
      * @return self
@@ -211,10 +225,16 @@ class GitChangeLogCreator
             '[#$1](../../issues/$1)',
             $message
         );
-        $message = htmlentities($message,
-            ENT_QUOTES | ENT_DISALLOWED | ENT_HTML5, 'UTF-8');
+        $message = htmlspecialchars($message, ENT_DISALLOWED | ENT_HTML5, 'UTF-8', false);
         $format = ' * [%1$s](../../commit/%2$s) %3$s (%4$s) - %5$s';
         return sprintf($format, $hashName, $hash, $dateTime, $committer, $message);
+    }
+    /**
+     * @return string
+     */
+    protected function getEol()
+    {
+        return $this->eol;
     }
     /**
      * @return string
@@ -307,6 +327,10 @@ class GitChangeLogCreator
      * @type string $contents
      */
     protected $contents;
+    /**
+     * @type string $eol
+     */
+    protected $eol = "\n";
     /**
      * @type string $fileFooter
      */
