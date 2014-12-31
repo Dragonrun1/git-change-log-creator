@@ -297,7 +297,7 @@ class GitChangeLogCreator
     {
         $toc = '';
         foreach ($tags as $tag) {
-            $$tag = htmlentities($tag, ENT_QUOTES | ENT_DISALLOWED | ENT_HTML5,
+            $tag = htmlentities($tag, ENT_QUOTES | ENT_DISALLOWED | ENT_HTML5,
                 'UTF-8');
             $toc .= ' * [' . $tag . '](#' . $tag . ')' . PHP_EOL;
         }
