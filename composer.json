@@ -31,6 +31,7 @@
     "require-dev": {
         "squizlabs/php_codesniffer": "dev-master",
         "phploc/phploc": "*",
-        "phpmd/phpmd": "~2.1"
+        "phpmd/phpmd": "~2.1",
+        "satooshi/php-coveralls": "dev-master"
     }
 }

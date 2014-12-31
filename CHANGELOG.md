@@ -8,6 +8,9 @@ Auto-generated from Git log.
  * [master](#master)
 
 ## [master](../../tree/master)
+ * [c415cdf2d9](../../commit/c415cdf2d97e413a56f638e310b431d99b51624f) 2014-12-31T03:15:41+00:00 (Michael Cummings) - Added README.md to update EOL.
+ * [4984e6498b](../../commit/4984e6498bbacab0bda86f03d44048c7223fa716) 2014-12-31T03:14:49+00:00 (Michael Cummings) - Delete README.md to update EOL.
+ * [a9162e6b56](../../commit/a9162e6b568b6b691ffedb5924fab008758818bc) 2014-12-31T02:55:02+00:00 (Michael Cummings) - Added stuff to set content end-of-line and reduce entity encoding of commit message part to only do html special chars escaping.
  * [981bd86539](../../commit/981bd8653904967df03e1a05fc8256f44204b30c) 2014-12-31T02:14:29+00:00 (Michael Cummings) - Last fix on EOL for all files I hope.
  * [2c8c90d2f8](../../commit/2c8c90d2f81423cd76d04aa974004a17ca6c8ffe) 2014-12-31T01:48:02+00:00 (Michael Cummings) - Updates to .gitignore and .gitattributes.
  * [2dea649bd6](../../commit/2dea649bd6808c14971493a60364ad74b14ca103) 2014-12-31T01:39:48+00:00 (Michael Cummings) - Resolved [#1](../../issues/1) [Insight] Unused method, property, variable or parameter - in src/GitChangeLogCreator.php, line 300. Also resolve a few other things Insight noticed.
