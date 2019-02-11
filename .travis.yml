@@ -13,5 +13,5 @@ script:
     #- mkdir -p build/logs
     #- phpunit --coverage-clover build/logs/clover.xml
 after_success:
-    - travis_retry composer require --dev php-coveralls/php-coveralls\
-        && php vendor/bin/php-coveralls -v
+#- travis_retry composer require --dev php-coveralls/php-coveralls\
+#    && php vendor/bin/php-coveralls -v
