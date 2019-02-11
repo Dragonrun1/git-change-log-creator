@@ -1,18 +1,19 @@
 <?php
+declare(strict_types=1);
+
 /**
- * Contains Yapeal Bootstrap.
+ * Contains bootstrap.
  *
- * PHP version 5.4
+ * PHP version 7.1
  *
  * LICENSE:
- * This file is part of Yet Another Php Eve Api Library also know as Yapeal
- * which can be used to access the Eve Online API data and place it into a
- * database. Copyright (C) 2014 Michael Cummings
+ * This file is part of git-change-log-creator which is used to create an
+ * updated change log file from Git log.
+ * Copyright (C) 2014-2019 Michael Cummings
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your
- * option) any later version.
+ * Free Software Foundation, either version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -21,28 +22,47 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
+ * <https://opensource.org/licenses/GPL-2.0>.
  *
- * You should be able to find a copy of this license in the LICENSE.md file. A
- * copy of the GNU GPL should also be available in the GNU-GPL.md file.
+ * You should be able to find a copy of this license in the LICENSE file.
  *
- * @copyright 2014 Michael Cummings
- * @license   http://www.gnu.org/copyleft/lesser.html GNU LGPL
+ * @copyright 2014-2019 Michael Cummings
+ * @license   GPL-2.0
  * @author    Michael Cummings <mgcummings@yahoo.com>
  */
-namespace GitChangeLogCreator;
+
+use Composer\Autoload\ClassLoader;
 
 /*
-* Find auto loader from one of
-* vendor/bin/
-* OR ./
-* OR bin/
-* OR lib/PhpEOL/
-* OR vendor/PhpEOL/PhpEOL/bin/
-*/
-(@include_once dirname(__DIR__) . '/autoload.php')
-|| (@include_once __DIR__ . '/vendor/autoload.php')
-|| (@include_once dirname(__DIR__) . '/vendor/autoload.php')
-|| (@include_once dirname(dirname(__DIR__)) . '/vendor/autoload.php')
-|| (@include_once dirname(dirname(dirname(__DIR__))) . '/autoload.php')
-|| die('Could not find required auto class loader. Aborting ...');
+ * Nothing to do if Composer auto loader already exists.
+ */
+if (class_exists(ClassLoader::class, false)) {
+    return 0;
+}
+/*
+ * Find Composer auto loader after striping away any vendor path.
+ */
+$path = str_replace('\\', '/', dirname(__DIR__));
+$vendorPos = strpos($path, 'vendor/');
+if (false !== $vendorPos) {
+    $path = substr($path, 0, $vendorPos);
+}
+$path .= '/vendor/autoload.php';
+/*
+ * Turn off warning messages for the following include.
+ */
+$errorReporting = error_reporting(E_ALL & ~E_WARNING);
+/** @noinspection PhpIncludeInspection */
+include_once $path;
+error_reporting($errorReporting);
+unset($errorReporting, $path, $vendorPos);
+if (!class_exists(ClassLoader::class, false)) {
+    $mess = 'Could NOT find required Composer class auto loader. Aborting ...';
+    if ('cli' === PHP_SAPI) {
+        fwrite(STDERR, $mess);
+    } else {
+        fwrite(STDOUT, $mess);
+    }
+    unset($mess);
+    exit(1);
+}
