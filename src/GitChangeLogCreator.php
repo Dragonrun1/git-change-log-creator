@@ -1,13 +1,14 @@
 <?php
+declare(strict_types=1);
 /**
  * Contains GitChangeLogCreator class.
  *
- * PHP version 5.4
+ * PHP version 7.1
  *
  * LICENSE:
  * This file is part of git-change-log-creator which is used to create an
  * updated change log file from Git log.
- * Copyright (C) 2014 Michael Cummings
+ * Copyright (C) 2014-2019 Michael Cummings
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by the
@@ -20,41 +21,39 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
+ * <https://opensource.org/licenses/GPL-2.0>.
  *
  * You should be able to find a copy of this license in the LICENSE file.
  *
- * @copyright 2014 Michael Cummings
- * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU GPL
+ * @copyright 2014-2019 Michael Cummings
+ * @license   GPL-2.0
  * @author    Michael Cummings <mgcummings@yahoo.com>
  */
+
 namespace GitChangeLogCreator;
 
 use DomainException;
-use Exception;
 use RuntimeException;
 
 /**
  * Class GitChangeLogCreator
  */
-class GitChangeLogCreator
-{
+class GitChangeLogCreator {
     /**
      * @throws RunTimeException
+     * @throws DomainException
      */
-    public function __construct()
-    {
+    public function __construct() {
         if (!function_exists('shell_exec')) {
             $mess = 'The shell_exec function has been disabled.';
-            throw new RunTimeException($mess);
+            throw new \RunTimeException($mess);
         }
         $this->setHashLength();
     }
     /**
      *
      */
-    public function __destruct()
-    {
+    public function __destruct() {
         if ($this->fileHandle) {
             @flock($this->fileHandle, LOCK_UN);
             @fclose($this->fileHandle);
@@ -63,8 +62,7 @@ class GitChangeLogCreator
     /**
      * @return self
      */
-    public function contentGenerator()
-    {
+    public function contentGenerator(): self {
         $this->logs = array_reverse($this->logs);
         reset($this->logs);
         $this->contents = $this->getFileHeader(array_keys($this->logs));
@@ -80,19 +78,18 @@ class GitChangeLogCreator
     }
     /**
      * @return self
-     * @throws Exception
+     * @throws \RuntimeException
      */
-    public function fileGenerate()
-    {
+    public function fileGenerate(): self {
         $handle = $this->getFileHandle();
         $tries = 0;
         //Give a minute to try writing file.
         $timeout = time() + 60;
-        while (strlen($this->contents)) {
+        while ('' !== $this->contents) {
             if (++$tries > 10 || time() > $timeout) {
                 $this->__destruct();
                 $mess = 'Giving up could NOT finish writing  ' . $this->getFileName();
-                throw new Exception($mess);
+                throw new \RuntimeException($mess);
             }
             $written = fwrite($handle, $this->contents);
             // Decrease $tries while making progress but NEVER $tries < 1.
@@ -107,20 +104,19 @@ class GitChangeLogCreator
     /**
      * @return string
      */
-    public function getContents()
-    {
+    public function getContents(): string {
         return $this->contents;
     }
     /**
      * @return self
-     * @throws Exception
+     * @throws \RuntimeException
+     * @throws \DomainException
      */
-    public function getLogs()
-    {
+    public function getLogs(): self {
         $nextTag = '';
         $count = count($this->tags);
         if ($count === 0) {
-            throw new Exception('Does not have any tag.');
+            throw new \RuntimeException('Does not have any tag.');
         }
         foreach ($this->tags as $v) {
             $gitCommand = $this->gitLog . $this->gitLogOptions . $nextTag . $v;
@@ -140,13 +136,12 @@ class GitChangeLogCreator
         return $this;
     }
     /**
-     * @return $this
+     * @return self
      */
-    public function getTags()
-    {
+    public function getTags(): self {
         $this->tags = array_unique(explode("\n", shell_exec($this->gitTag)));
         sort($this->tags);
-        if ($this->tags[0] == '') {
+        if ('' === $this->tags[0]) {
             $this->tags[0] = 'master';
         }
         sort($this->tags);
@@ -159,8 +154,7 @@ class GitChangeLogCreator
      *
      * @return self
      */
-    public function setEol($value = "\n")
-    {
+    public function setEol(string $value = "\n"): self {
         $this->eol = $value;
         return $this;
     }
@@ -169,9 +163,8 @@ class GitChangeLogCreator
      *
      * @return self
      */
-    public function setFileFooter($value)
-    {
-        $this->fileFooter = (string)$value;
+    public function setFileFooter(string $value): self {
+        $this->fileFooter = $value;
         return $this;
     }
     /**
@@ -179,9 +172,8 @@ class GitChangeLogCreator
      *
      * @return self
      */
-    public function setFileHeader($value)
-    {
-        $this->fileHeader = (string)$value;
+    public function setFileHeader(string $value): self {
+        $this->fileHeader = $value;
         return $this;
     }
     /**
@@ -189,22 +181,19 @@ class GitChangeLogCreator
      *
      * @return self
      */
-    public function setFileName($value = 'CHANGELOG.md')
-    {
-        $this->fileName = (string)$value;
+    public function setFileName(string $value = 'CHANGELOG.md'): self {
+        $this->fileName = $value;
         return $this;
     }
     /**
      * @param int $value
      *
-     * @throws DomainException
      * @return self
+     * @throws \DomainException
      */
-    public function setHashLength($value = 10)
-    {
-        $value = (int)$value;
-        if ($value < 1) {
-            throw new DomainException('Hash length must be > 0 was given ' .
+    public function setHashLength(int $value = 10): self {
+        if (0 > $value) {
+            throw new \DomainException('Hash length must be > 0 was given ' .
                 $value);
         }
         $this->hashLength = $value;
@@ -214,14 +203,14 @@ class GitChangeLogCreator
      * @param string $log
      *
      * @return string
+     * @throws \DomainException
      */
-    protected function convertLogLine($log)
-    {
-        list($hash, $dateTime, $committer, $message) = explode("\t", $log);
+    protected function convertLogLine(string $log): string {
+        [$hash, $dateTime, $committer, $message] = explode("\t", $log);
         $hashName = substr($hash, 0, $this->getHashLength());
         $dateTime = gmdate('c', strtotime($dateTime));
         $message = preg_replace(
-            '/#([0-9]+)/m',
+            '/#([\d]+)/m',
             '[#$1](../../issues/$1)',
             $message
         );
@@ -232,29 +221,27 @@ class GitChangeLogCreator
     /**
      * @return string
      */
-    protected function getEol()
-    {
+    protected function getEol(): string {
         return $this->eol;
     }
     /**
      * @return string
      */
-    protected function getFileFooter()
-    {
+    protected function getFileFooter(): string {
         return $this->fileFooter;
     }
     /**
      * @return resource
-     * @throws Exception
+     * @throws \RuntimeException
+     * @throws \Exception
      */
-    protected function getFileHandle()
-    {
+    protected function getFileHandle() {
         if (empty($this->fileHandle)) {
             $fileName = $this->getFileName();
             $this->fileHandle = fopen($fileName, 'cb');
             if (false === $this->fileHandle) {
                 $mess = sprintf('Unable to open %1$s file', $fileName);
-                throw new Exception($mess);
+                throw new \RuntimeException($mess);
             }
             $tries = 0;
             // Give a little time to try getting lock.
@@ -263,10 +250,10 @@ class GitChangeLogCreator
                 if (++$tries > 10 || time() > $timeout) {
                     $this->__destruct();
                     $mess = 'Giving up could NOT get flock on ' . $fileName;
-                    throw new Exception($mess);
+                    throw new \RuntimeException($mess);
                 }
                 // Wait 0.1 to 0.5 seconds before trying again.
-                usleep(rand(100000, 500000));
+                usleep(random_int(100000, 500000));
             }
             @ftruncate($this->fileHandle, 0);
         }
@@ -277,8 +264,7 @@ class GitChangeLogCreator
      *
      * @return string
      */
-    protected function getFileHeader(array $tags)
-    {
+    protected function getFileHeader(array $tags): string {
         $fileName = $this->getFileName() . PHP_EOL
             . str_repeat('=', strlen($this->getFileName()));
         $toc = $this->getTableOfContents($tags);
@@ -291,8 +277,7 @@ class GitChangeLogCreator
     /**
      * @return string
      */
-    protected function getFileName()
-    {
+    protected function getFileName(): string {
         if (empty($this->fileName)) {
             $this->setFileName();
         }
@@ -300,9 +285,9 @@ class GitChangeLogCreator
     }
     /**
      * @return int
+     * @throws DomainException
      */
-    protected function getHashLength()
-    {
+    protected function getHashLength(): int {
         if (empty($this->hashLength)) {
             $this->setHashLength();
         }
@@ -313,8 +298,7 @@ class GitChangeLogCreator
      *
      * @return string
      */
-    protected function getTableOfContents(array $tags)
-    {
+    protected function getTableOfContents(array $tags): string {
         $toc = '';
         foreach ($tags as $tag) {
             $tag = htmlentities($tag, ENT_QUOTES | ENT_DISALLOWED | ENT_HTML5,
