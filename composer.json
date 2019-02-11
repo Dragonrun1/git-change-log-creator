@@ -26,12 +26,9 @@
     "require": {
         "ext-date": "*",
         "ext-SPL": "*",
-        "php": ">=5.4"
+        "php": ">=7.1"
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "dev-master",
-        "phploc/phploc": "*",
-        "phpmd/phpmd": "~2.1",
-        "satooshi/php-coveralls": "dev-master"
+        "roave/security-advisories": "dev-master"
     }
 }
