@@ -6,8 +6,18 @@ Auto-generated from Git log.
 ## Table of Contents
 
  * [master](#master)
+ * [1&period;0](#1&period;0)
 
 ## [master](../../tree/master)
+ * [7095ad9ab8](../../commit/7095ad9ab829d68aa5e624d8e369f98cc381c0d6) 2019-02-19T00:34:53+00:00 (Dragonrun1) - Fixed directory error in bootstrap.php file.
+## [1&period;0](../../tree/1&period;0)
+ * [9bf681bd3c](../../commit/9bf681bd3c0b388a9b96ae30b9e77634e81a1dc0) 2019-02-11T04:36:46+00:00 (Dragonrun1) - Updated .travis.yml with testing off.
+ * [d8f5e83ae7](../../commit/d8f5e83ae7bef8b75dcffb5ea6fc3643f3b2ccd2) 2019-02-11T04:03:26+00:00 (Dragonrun1) - Updated .travis.yml for PHP plus some other misc stuff.
+ * [16d455804a](../../commit/16d455804a6b4084903411c18ebde2dafa935e59) 2019-02-11T04:02:22+00:00 (Dragonrun1) - Updated composer.json to reflect other changes.
+ * [6635e09095](../../commit/6635e09095dccf511d33c06e0cd3870294caa369) 2019-02-11T04:00:16+00:00 (Dragonrun1) - Updated example.php license and code for PHP 7.1+
+ * [0730a79085](../../commit/0730a79085e0cadbee2aa7e9ad36d2f4b14f7400) 2019-02-11T03:56:54+00:00 (Dragonrun1) - Updated class license and code for PHP 7.1+
+ * [540a594ac0](../../commit/540a594ac067286f35c006df80a3d15f50fd954d) 2019-02-11T03:30:23+00:00 (Dragonrun1) - Updated bootstrap.php license and code for PHP 7.1+
+ * [1150324adf](../../commit/1150324adf8a101b44094b67421b5f8dafd8b53b) 2014-12-31T04:14:41+00:00 (Michael Cummings) - Updated .getignored and CHANGELOG.md. Added .coveralls.yml and .travis.yml.
  * [c415cdf2d9](../../commit/c415cdf2d97e413a56f638e310b431d99b51624f) 2014-12-31T03:15:41+00:00 (Michael Cummings) - Added README.md to update EOL.
  * [4984e6498b](../../commit/4984e6498bbacab0bda86f03d44048c7223fa716) 2014-12-31T03:14:49+00:00 (Michael Cummings) - Delete README.md to update EOL.
  * [a9162e6b56](../../commit/a9162e6b568b6b691ffedb5924fab008758818bc) 2014-12-31T02:55:02+00:00 (Michael Cummings) - Added stuff to set content end-of-line and reduce entity encoding of commit message part to only do html special chars escaping.
