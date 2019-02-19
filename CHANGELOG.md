@@ -5,10 +5,11 @@ Auto-generated from Git log.
 
 ## Table of Contents
 
- * [master](#master)
+ * [1&period;0&period;1](#1&period;0&period;1)
  * [1&period;0](#1&period;0)
 
-## [master](../../tree/master)
+## [1&period;0&period;1](../../tree/1&period;0&period;1)
+ * [c85fa73406](../../commit/c85fa734066f8e6a9c1873623e46e7cbdbfca1c4) 2019-02-19T00:36:24+00:00 (Dragonrun1) - removed var_dump()s from bootstrap.php file.
  * [7095ad9ab8](../../commit/7095ad9ab829d68aa5e624d8e369f98cc381c0d6) 2019-02-19T00:34:53+00:00 (Dragonrun1) - Fixed directory error in bootstrap.php file.
 ## [1&period;0](../../tree/1&period;0)
  * [9bf681bd3c](../../commit/9bf681bd3c0b388a9b96ae30b9e77634e81a1dc0) 2019-02-11T04:36:46+00:00 (Dragonrun1) - Updated .travis.yml with testing off.

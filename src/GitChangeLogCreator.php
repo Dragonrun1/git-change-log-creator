@@ -121,7 +121,11 @@ class GitChangeLogCreator {
         foreach ($this->tags as $v) {
             $gitCommand = $this->gitLog . $this->gitLogOptions . $nextTag . $v;
             $commits = [];
-            foreach (explode("\n", shell_exec($gitCommand)) as $commit) {
+            $exec = shell_exec($gitCommand);
+            if (null === $exec) {
+                continue;
+            }
+            foreach (explode("\n", $exec) as $commit) {
                 if (empty($commit)) {
                     continue;
                 }
