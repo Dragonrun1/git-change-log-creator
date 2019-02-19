@@ -42,12 +42,14 @@ if (class_exists(ClassLoader::class, false)) {
 /*
  * Find Composer auto loader after striping away any vendor path.
  */
-$path = str_replace('\\', '/', dirname(__DIR__));
+$path = str_replace('\\', '/', __DIR__);
+var_dump($path);
 $vendorPos = strpos($path, 'vendor/');
 if (false !== $vendorPos) {
     $path = substr($path, 0, $vendorPos);
 }
 $path .= '/vendor/autoload.php';
+var_dump($path);
 /*
  * Turn off warning messages for the following include.
  */
