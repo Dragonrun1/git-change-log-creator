@@ -74,6 +74,7 @@ class GitChangeLogCreator {
         $this->contents .= $this->getFileFooter();
         $this->contents = str_replace(["\r\n", "\r", "\n"], $this->getEol(),
             $this->contents);
+        $this->contents = str_replace('&period;', '.', $this->contents);
         return $this;
     }
     /**
